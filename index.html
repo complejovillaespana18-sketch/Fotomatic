@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#a0d2e8">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="FOTON">
+  <title>FOTON - 15 años Tatiana</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', 'Arial', sans-serif;
+      background: linear-gradient(145deg, #0a1a2a 0%, #0e2a3a 100%);
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .logo {
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffd966, #ffb347);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .subtitle {
+      color: #8bb5c2;
+      font-size: 0.7rem;
+    }
+
+    .btn-camera {
+      background: linear-gradient(135deg, #ffb347, #ff8c00);
+      border: none;
+      width: 100%;
+      padding: 20px;
+      border-radius: 60px;
+      color: white;
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin: 15px 0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      transition: transform 0.1s;
+    }
+
+    .btn-camera:active {
+      transform: scale(0.98);
+    }
+
+    .camera-selector {
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(10px);
+      border-radius: 60px;
+      padding: 8px;
+      margin: 10px 0;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .camera-option {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 40px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .camera-option.active {
+      background: #ffb347;
+      color: #1e2a3a;
+    }
+
+    .stats {
+      background: rgba(0,0,0,0.6);
+      border-radius: 50px;
+      padding: 12px 20px;
+      margin: 15px 0;
+      display: flex;
+      justify-content: space-between;
+      text-align: center;
+    }
+
+    .stats-number {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #ffb347;
+    }
+
+    .stats-label {
+      font-size: 0.65rem;
+      color: #aaccdd;
+    }
+
+    .galeria-titulo {
+      display: flex;
+      justify-content: space-between;
+      margin: 12px 0 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #ffb347;
+    }
+
+    .galeria-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      max-height: 300px;
+      overflow-y: auto;
+      padding: 10px;
+      background: rgba(0,0,0,0.4);
+      border-radius: 25px;
+      min-height: 100px;
+    }
+
+    .foto-item {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .foto-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .foto-status {
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      background: rgba(0,0,0,0.7);
+      border-radius: 20px;
+      padding: 2px 6px;
+      font-size: 0.6rem;
+      color: white;
+    }
+
+    .foto-status.sending { background: #f39c12; }
+    .foto-status.error { background: #e74c3c; }
+    .foto-status.pending { background: #3498db; }
+
+    .loader-small {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border: 2px solid white;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .mensaje-flotante {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #ffb347;
+      color: #1e2a3a;
+      padding: 10px 20px;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      z-index: 1000;
+      animation: fadeMsg 2s forwards;
+    }
+
+    @keyframes fadeMsg {
+      0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+      80% { opacity: 1; }
+      100% { opacity: 0; visibility: hidden; }
+    }
+
+    .info-text {
+      text-align: center;
+      color: #8bb5c2;
+      font-size: 0.7rem;
+      margin-top: 10px;
+    }
+
+    .btn-limpiar {
+      background: rgba(231, 76, 60, 0.6);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 30px;
+      color: white;
+      font-size: 0.65rem;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .contador-total {
+      background: linear-gradient(135deg, #ffb347, #ff8c00);
+      border-radius: 30px;
+      padding: 8px 15px;
+      margin: 10px 0;
+      text-align: center;
+      font-weight: bold;
+      color: white;
+      font-size: 0.8rem;
+    }
+
+    .contador-total span {
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin: 0 5px;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo">📸 FOTON</div>
+    <div class="subtitle">15 años Tatiana · fotos que llegan solas a Google Drive</div>
+  </div>
+
+  <div class="camera-selector">
+    <button id="camaraFrontalBtn" class="camera-option active"><i class="fas fa-smile"></i> Selfie</button>
+    <button id="camaraTraseraBtn" class="camera-option"><i class="fas fa-camera"></i> Trasera</button>
+  </div>
+
+  <button id="abrirCamaraBtn" class="btn-camera">
+    <i class="fas fa-camera"></i> Abrir cámara
+  </button>
+
+  <!-- Contador total de fotos enviadas -->
+  <div class="contador-total">
+    <i class="fas fa-check-circle"></i> Total fotos enviadas: <span id="totalEnviadas">0</span> 📸
+  </div>
+
+  <div class="stats">
+    <div><div class="stats-number" id="fotosPendientes">0</div><div class="stats-label">Pendiente/Error</div></div>
+    <div><div class="stats-number" id="enProceso">0</div><div class="stats-label">Enviando ahora</div></div>
+  </div>
+
+  <div class="galeria-titulo">
+    <span><i class="fas fa-images"></i> Fotos por enviar</span>
+    <span style="font-size:0.65rem;">✨ se envían solas y desaparecen</span>
+  </div>
+  <div id="galeriaGrid" class="galeria-grid">
+    <div style="color:#8bb5c2; width:100%; text-align:center; padding:20px;">📸 Toca "Abrir cámara" para empezar</div>
+  </div>
+  <div class="info-text">
+    <i class="fas fa-info-circle"></i> Puedes tomar todas las fotos que quieras. Cada una se enviará sola a Google Drive.<br>
+    <i class="fas fa-bolt"></i> El flash funciona automáticamente con la cámara de tu celular.<br>
+    <i class="fas fa-infinity"></i> <strong>Sin límite de fotos:</strong> ¡puedes tomar todas las que quieras!<br>
+    <i class="fas fa-trash-alt"></i> Las fotos enviadas <strong>desaparecen automáticamente</strong> de la galería.<br>
+    <i class="fas fa-chart-line"></i> El contador arriba muestra el <strong>total de fotos enviadas</strong> en esta sesión.<br>
+    <button id="limpiarPendientes" class="btn-limpiar"><i class="fas fa-trash"></i> Reintentar errores</button>
+    <button id="resetContador" class="btn-limpiar" style="background: rgba(52, 152, 219, 0.6); margin-left: 5px;"><i class="fas fa-sync-alt"></i> Reiniciar contador</button>
+  </div>
+</div>
+
+<script>
+  // ========== CONFIGURACIÓN ==========
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx30ZG3jDS-4CoszM4SORbwB9pTwgrfNLbo0Jk7xLbk_Y7wopNTzS6Uw7C41UC04MdN/exec";
+  
+  let fotos = [];
+  let nextId = 1;
+  let camaraActual = "user";
+  let enviandoActivos = 0;
+  let totalEnviadas = 0;
+  const MAX_CONCURRENTES = 5;
+  
+  const abrirCamaraBtn = document.getElementById('abrirCamaraBtn');
+  const galeriaGrid = document.getElementById('galeriaGrid');
+  const camaraFrontalBtn = document.getElementById('camaraFrontalBtn');
+  const camaraTraseraBtn = document.getElementById('camaraTraseraBtn');
+  const limpiarBtn = document.getElementById('limpiarPendientes');
+  const resetBtn = document.getElementById('resetContador');
+  
+  function guardarFotos() {
+    localStorage.setItem('fotosFoton', JSON.stringify(fotos));
+  }
+  
+  function guardarTotalEnviadas() {
+    localStorage.setItem('totalEnviadasFoton', totalEnviadas);
+  }
+  
+  function cargarFotosGuardadas() {
+    const guardadas = localStorage.getItem('fotosFoton');
+    if (guardadas) {
+      fotos = JSON.parse(guardadas);
+      // Filtrar solo fotos que no estén enviadas (las enviadas se eliminan)
+      fotos = fotos.filter(f => f.status !== 'sent');
+      nextId = fotos.length > 0 ? Math.max(...fotos.map(f => f.id)) + 1 : 1;
+    }
+    
+    // Cargar total de enviadas
+    const guardadoTotal = localStorage.getItem('totalEnviadasFoton');
+    if (guardadoTotal) {
+      totalEnviadas = parseInt(guardadoTotal) || 0;
+    }
+    
+    renderGaleria();
+    actualizarStats();
+    
+    // Reintentar todas las pendientes o con error
+    fotos.forEach(foto => {
+      if (foto.status === 'pending' || foto.status === 'error') {
+        enviarFoto(foto);
+      }
+    });
+  }
+  
+  function renderGaleria() {
+    if (fotos.length === 0) {
+      galeriaGrid.innerHTML = '<div style="color:#8bb5c2; width:100%; text-align:center; padding:20px;">✨ No hay fotos pendientes ✨</div>';
+      return;
+    }
+    galeriaGrid.innerHTML = fotos.map(foto => `
+      <div class="foto-item">
+        <img src="${foto.data}" alt="foto">
+        <div class="foto-status ${foto.status}">
+          ${foto.status === 'sending' ? '<span class="loader-small"></span>' : (foto.status === 'error' ? '❌' : '⏳')}
+        </div>
+      </div>
+    `).join('');
+  }
+  
+  function actualizarStats() {
+    const pendientes = fotos.filter(f => f.status === 'pending' || f.status === 'error').length;
+    const enProceso = fotos.filter(f => f.status === 'sending').length;
+    document.getElementById('fotosPendientes').textContent = pendientes;
+    document.getElementById('enProceso').textContent = enProceso;
+    document.getElementById('totalEnviadas').textContent = totalEnviadas;
+  }
+  
+  function mostrarMensaje(texto, error = false) {
+    const msg = document.createElement('div');
+    msg.className = 'mensaje-flotante';
+    msg.innerHTML = texto;
+    if (error) msg.style.background = '#e74c3c';
+    document.body.appendChild(msg);
+    setTimeout(() => msg.remove(), 2000);
+  }
+  
+  async function enviarFoto(foto) {
+    if (foto.status === 'sent') return;
+    if (foto.status === 'sending') return;
+    
+    // Esperar si hay muchos envíos simultáneos
+    while (enviandoActivos >= MAX_CONCURRENTES) {
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
+    
+    foto.status = 'sending';
+    enviandoActivos++;
+    guardarFotos();
+    renderGaleria();
+    actualizarStats();
+    
+    try {
+      const formData = new URLSearchParams();
+      formData.append('image', foto.data);
+      formData.append('timestamp', foto.timestamp);
+      
+      const response = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: formData,
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      });
+      const result = await response.text();
+      
+      if (result.startsWith('OK') || result.includes('OK')) {
+        // ✅ Foto enviada con éxito - ELIMINAR DE LA GALERÍA
+        const index = fotos.findIndex(f => f.id === foto.id);
+        if (index !== -1) {
+          fotos.splice(index, 1);
+        }
+        // Incrementar contador total
+        totalEnviadas++;
+        guardarTotalEnviadas();
+        guardarFotos();
+        renderGaleria();
+        actualizarStats();
+        mostrarMensaje(`📸 ¡Foto enviada a Google Drive! Total: ${totalEnviadas} ✨`);
+      } else {
+        throw new Error(result);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      foto.status = 'error';
+      mostrarMensaje('⚠️ Error. Reintentando...', true);
+      guardarFotos();
+      renderGaleria();
+      actualizarStats();
+      // Reintento con backoff exponencial
+      setTimeout(() => {
+        const fotoActual = fotos.find(f => f.id === foto.id);
+        if (fotoActual && fotoActual.status === 'error') {
+          enviarFoto(fotoActual);
+        }
+      }, 8000);
+    } finally {
+      enviandoActivos--;
+    }
+  }
+  
+  function agregarFoto(dataUrl) {
+    const nuevaFoto = {
+      id: nextId++,
+      data: dataUrl,
+      status: 'pending',
+      timestamp: new Date().toISOString()
+    };
+    fotos.unshift(nuevaFoto);
+    guardarFotos();
+    renderGaleria();
+    actualizarStats();
+    
+    // Envío automático inmediato
+    enviarFoto(nuevaFoto);
+    
+    burstEffect();
+    mostrarMensaje(`📸 Foto tomada, enviando...`);
+  }
+  
+  function burstEffect() {
+    const container = document.createElement('div');
+    container.style.position = 'fixed';
+    container.style.top = '0';
+    container.style.left = '0';
+    container.style.width = '100%';
+    container.style.height = '100%';
+    container.style.pointerEvents = 'none';
+    container.style.zIndex = '9999';
+    document.body.appendChild(container);
+    const icons = ['✨', '🦋', '💫', '🌟', '🎉', '📸', '🌸'];
+    for (let i = 0; i < 50; i++) {
+      const el = document.createElement('div');
+      el.innerText = icons[Math.floor(Math.random() * icons.length)];
+      el.style.position = 'absolute';
+      el.style.fontSize = (Math.random() * 24 + 12) + 'px';
+      el.style.left = Math.random() * 100 + '%';
+      el.style.top = '-10px';
+      el.style.opacity = '0.9';
+      container.appendChild(el);
+      el.animate([
+        { transform: 'translateY(0px) rotate(0deg)', opacity: 0.9 },
+        { transform: `translateY(${window.innerHeight + 60}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+      ], { duration: 1400 });
+      setTimeout(() => el.remove(), 1500);
+    }
+    setTimeout(() => container.remove(), 1600);
+  }
+  
+  function abrirCamaraNativa() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.capture = camaraActual === 'user' ? 'user' : 'environment';
+    input.multiple = false;
+    
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          agregarFoto(event.target.result);
+        };
+        reader.readAsDataURL(file);
+      }
+      // Limpiar para poder tomar otra foto inmediatamente
+      setTimeout(() => {
+        input.value = '';
+      }, 100);
+    };
+    
+    input.click();
+  }
+  
+  function reintentarErrores() {
+    fotos.forEach(foto => {
+      if (foto.status === 'error') {
+        enviarFoto(foto);
+      }
+    });
+    mostrarMensaje('🔄 Reintentando fotos con error...');
+  }
+  
+  function resetearContador() {
+    if (confirm('¿Reiniciar el contador de fotos enviadas? Esto no afecta las fotos ya guardadas en Google Drive.')) {
+      totalEnviadas = 0;
+      guardarTotalEnviadas();
+      actualizarStats();
+      mostrarMensaje('✅ Contador reiniciado');
+    }
+  }
+  
+  camaraFrontalBtn.addEventListener('click', () => {
+    camaraActual = 'user';
+    camaraFrontalBtn.classList.add('active');
+    camaraTraseraBtn.classList.remove('active');
+    mostrarMensaje('🤳 Cámara frontal seleccionada');
+  });
+  
+  camaraTraseraBtn.addEventListener('click', () => {
+    camaraActual = 'environment';
+    camaraTraseraBtn.classList.add('active');
+    camaraFrontalBtn.classList.remove('active');
+    mostrarMensaje('📷 Cámara trasera seleccionada');
+  });
+  
+  abrirCamaraBtn.addEventListener('click', abrirCamaraNativa);
+  limpiarBtn.addEventListener('click', reintentarErrores);
+  resetBtn.addEventListener('click', resetearContador);
+  
+  // Iniciar
+  cargarFotosGuardadas();
+</script>
+</body>
+</html>
